@@ -3,7 +3,7 @@ syntax = "proto3";
 package randomPackage;
 
 service Random {
-  rpc PinkPong(PingRequest) returns (PongResponse) {};
+  rpc PingPong(PingRequest) returns (PongResponse) {};
 }
 
 message PingRequest {

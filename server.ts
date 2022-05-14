@@ -36,7 +36,7 @@ function getServer() {
     PingPong: (req, res) => {
       console.log(req, res)
     },
-  })
+  } as RandomHandlers)
 
   return server
 }
