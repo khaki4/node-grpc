@@ -2,8 +2,7 @@ import path from 'path'
 import * as grpc from '@grpc/grpc-js'
 import * as protoLoader from '@grpc/proto-loader'
 import { ProtoGrpcType } from './proto/random'
-import { RandomHandlers } from './proto/randomPackage/Random'
-import { TodoRequest } from './proto/randomPackage/TodoRequest'
+import { ChatServiceHandlers } from './proto/randomPackage/ChatService'
 
 const PORT = 8082
 const PROTO_FILE = './proto/random.proto'
@@ -35,37 +34,17 @@ const todoList = []
 
 function getServer() {
   const server = new grpc.Server()
-  server.addService(randomPackage.Random.service, {
-    PingPong: (req, res) => {
-      console.log(req.request)
-      res(null, { message: 'Pong' })
-    },
-    RandomNumbers: (call) => {
-      const { maxVal } = call.request
-      console.log('maxVal:', maxVal)
+  server.addService(randomPackage.ChatService.service, {
+    ChatInitiate: (call, callback) => {
+      const sessionName = call.request.name || ''
+      const avatar = call.request.avatarUrl || ''
+      if (!sessionName || !avatar) {
+        callback(new Error('Name and Avatar required'))
+      }
 
-      let runCount = 0
-      const id = setInterval(() => {
-        runCount += 1
-        call.write({ num: Math.floor(Math.random() * maxVal) })
-
-        if (runCount >= 10) {
-          clearInterval(id)
-          call.end()
-        }
-      }, 500)
+      callback(null, { id: Math.floor(Math.random() * 1000) })
     },
-    TodoList: (call, callback) => {
-      call.on('data', (chunk: TodoRequest) => {
-        console.log(chunk)
-        todoList.push(chunk)
-      })
-
-      call.on('end', () => {
-        callback(null, { todos: todoList })
-      })
-    },
-  } as RandomHandlers)
+  } as ChatServiceHandlers)
 
   return server
 }
