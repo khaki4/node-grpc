@@ -30,8 +30,6 @@ function main() {
   )
 }
 
-const todoList = []
-
 function getServer() {
   const server = new grpc.Server()
   server.addService(randomPackage.ChatService.service, {
@@ -41,7 +39,6 @@ function getServer() {
       if (!sessionName || !avatar) {
         callback(new Error('Name and Avatar required'))
       }
-
       callback(null, { id: Math.floor(Math.random() * 1000) })
     },
   } as ChatServiceHandlers)
